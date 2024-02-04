@@ -4,7 +4,7 @@ const { off } = require("process");
 
 const statusList = [
     { value: 'proses_pembayaran', label: 'Proses Pembayaran' },
-    { value: 'konfirmasi', label: 'Konfirmasi Pembayaran' },
+    { value: 'konfirmasi_pembayaran', label: 'Konfirmasi Pembayaran' },
     { value: 'lunas', label: 'Lunas' }
 ]
 
