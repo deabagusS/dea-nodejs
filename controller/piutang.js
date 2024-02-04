@@ -52,11 +52,12 @@ const updateStatus = async (req, res) => {
             throw new Error(error.details[0].message);
         }
     
-        const data = await model.updateStatus(req.body.id, 'test');
+        const data = await model.updateStatus(req.body.id, 'lunas');
     
         res.json({
             status: true,
-            data: data
+            data: data,
+            message: 'pembayaran berhasil'
         });
     }catch (error) {
         res.json({
