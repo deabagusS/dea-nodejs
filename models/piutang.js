@@ -6,15 +6,7 @@ const collection = db.collection(document);
 
 const validateConditionGetData = (data) => {
     const scheme = Joi.object({
-        condition: Joi.object().keys({
-            document_id: Joi.object(),
-            destination_site: Joi.object(),
-            status: Joi.object(),
-            created_time : Joi.object().keys({
-                $gte : Joi.date(),
-                $lte : Joi.date()
-            }),
-        }).required(),
+        condition: Joi.object(),
         sort: Joi.object(),
         skip: Joi.number().required(),
         limit: Joi.number().required(),
@@ -32,11 +24,18 @@ const validateConditionUpdateStatus = (data) => {
 };
 
 const setCondition = (data) => {
-    if (data['created_time']) {
-        data['created_time'] = {
-            $gte: new Date(data['created_time']['$gte']),
-            $lte: new Date(data['created_time']['$lte']),
-        };
+    const arrayFIlter = ['tanggal_lelang', 'tanggal_jatuh_tempo', 'tanggal_lunas'];
+
+    for(let item of arrayFIlter) {
+        if (item in data) {
+            if ('$gte' in data[`${item}`]) {
+                data[`${item}`]['$gte'] = moment(data[`${item}`]['$gte']).toDate(); //new Date(data[`${item}`]['$gte']);
+            }
+
+            if ('$lte' in data[`${item}`]) {
+                data[`${item}`]['$lte'] = moment(data[`${item}`]['$lte']).toDate();
+            }
+        }
     }
     
     return data;
@@ -48,6 +47,8 @@ const getTotal = async (params) => {
 };
 
 const getDataList = async (params) => {
+    console.log('cekeck 2', setCondition(params.condition));
+
     const temp = await collection.aggregate([
         {
             $match: setCondition(params.condition)
@@ -59,7 +60,7 @@ const getDataList = async (params) => {
             $limit: params.limit || 10
         },
         {
-            $sort : {created_time : -1}
+            $sort : {tanggal_lelang : -1}
         }
     ]);
 
@@ -71,7 +72,7 @@ const getDataList = async (params) => {
 const updateStatus = async (arrayId, status) => {  
     const dataUpdate = {
         status: status,
-        tanggal_lunas: moment().tz('Asia/Jakarta').format()
+        tanggal_lunas: new Date(moment().tz('Asia/Jakarta').format())
     };
 
     const update = await collection.updateMany(

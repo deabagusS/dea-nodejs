@@ -30,7 +30,7 @@ const changeData = async (req, res) => {
         if (error) {
             throw new Error(error.details[0].message);
         }
-    
+        
         const data = await model.getDataList(req.body);
     
         res.json({
