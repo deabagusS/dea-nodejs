@@ -3,6 +3,7 @@ const moment = require('moment-timezone');
 const Joi = require('joi');
 const document = 'piutang';
 const collection = db.collection(document);
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
 const validateConditionGetData = (data) => {
     const scheme = Joi.object({
@@ -47,8 +48,6 @@ const getTotal = async (params) => {
 };
 
 const getDataList = async (params) => {
-    console.log('cekeck 2', setCondition(params.condition));
-
     const temp = await collection.aggregate([
         {
             $match: setCondition(params.condition)
@@ -87,10 +86,38 @@ const updateStatus = async (arrayId, status) => {
     return update;
 };
 
+const exportData = async () => {  
+    const csvHeader = [
+        {id: 'no_kewajiban', title: 'No Kewajiban'},
+        {id: 'no_polisi', title: 'No Polisi'},
+        {id: 'pemilik', title: 'Pemilik'},
+        {id: 'peserta', title: 'Peserta'},
+        {id: 'nomor_va', title: 'Nomor VA'},
+        {id: 'harga_terbentuk_rp', title: 'Harga Terbentuk (Rp)'},
+        {id: 'biaya_admin_ex_ppn_rp', title: 'Biaya Admin Ex PPN (Rp)'},
+        {id: 'ppn_rp', title: 'PPN (Rp)'},
+        {id: 'total_rp', title: 'Total (Rp)'},
+        {id: 'tanggal_lelang', title: 'Tanggal Lelang'},
+        {id: 'tanggal_jatuh_tempo', title: 'Tanggal Jatuh Tempo'},
+        {id: 'tanggal_lunas', title: 'Tanggal Lunas'},
+        {id: 'status', title: 'Status'},
+    ];
+
+    const timestamp = moment().format('YYMMddHHmmss');
+    const filename = `exports/piutang_${timestamp}.csv`;
+    const csvWriter = createCsvWriter({
+        path: filename,
+        header: csvHeader,
+    });
+    
+    return {csvWriter, filename};
+}
+
 module.exports = {
     getTotal,
     getDataList,
     updateStatus,
+    exportData,
     validateConditionGetData,
     validateConditionUpdateStatus
 }
