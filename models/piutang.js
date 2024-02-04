@@ -53,13 +53,13 @@ const getDataList = async (params) => {
             $match: setCondition(params.condition)
         },
         {
+            $sort : params.sort || {tanggal_lelang : -1}
+        },
+        {
             $skip: params.skip || 0
         },
         {
             $limit: params.limit || 10
-        },
-        {
-            $sort : {tanggal_lelang : -1}
         }
     ]);
 
