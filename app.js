@@ -32,6 +32,10 @@ app.use(express.urlencoded({ extended: false }));
 //   console.log(`Server running at http://${hostname}:${port}/`);
 // });
 
+// app.listen(port, () => {
+//   console.log(`Server running at port:${port}/`);
+// });
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/visitors', visitorsRouter);
